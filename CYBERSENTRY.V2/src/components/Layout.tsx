@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Terminal, Network, Brain } from 'lucide-react';
 
@@ -7,8 +7,14 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  const [now, setNow] = useState<string>(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date().toLocaleTimeString()), 1000);
+    return () => clearInterval(timer);
+  }, []);
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       {/* Cyberpunk background effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyber-primary/5 rounded-full blur-3xl animate-pulse-primary"></div>
@@ -33,7 +39,7 @@ export const Layout = ({ children }: LayoutProps) => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Shield className="w-8 h-8 text-cyber-primary animate-pulse-primary" />
+              <Shield className="w-8 h-8 text-cyber-primary animate-pulse-primary icon-clean" />
               <div>
                 <h1 className="font-header text-xl text-cyber-primary font-bold">
                   CyberSentry
@@ -67,24 +73,20 @@ export const Layout = ({ children }: LayoutProps) => {
           {/* System time */}
           <div className="text-right">
             <div className="text-xs text-muted-foreground">System Time</div>
-            <div className="font-mono text-sm text-cyber-accent">
-              {new Date().toLocaleTimeString()}
-            </div>
+            <div className="font-mono text-sm text-cyber-accent">{now}</div>
           </div>
         </div>
       </motion.header>
 
       {/* Main content */}
-      <main className="relative z-10 container mx-auto p-4">
+      <main className="relative z-10 container mx-auto p-4 flex-1">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-0 glass-panel border-t border-cyber-accent/20 p-2">
+      <footer className="z-0 glass-panel border-t border-cyber-accent/20 p-2">
         <div className="container mx-auto text-center">
-          <p className="text-xs text-muted-foreground">
-            CyberSentry v2.1.3 | Classification: UNCLASSIFIED | {new Date().getFullYear()}
-          </p>
+          <p className="text-xs text-muted-foreground">CyberSentry V2 © Void {new Date().getFullYear()}</p>
         </div>
       </footer>
     </div>

@@ -10,7 +10,7 @@ import { ThreatIntelPanel } from '@/components/ThreatIntelPanel';
 import { AIChatbot } from '@/components/AIChatbot';
 import { useNetworkStore } from '@/store/networkStore';
 import { socketManager } from '@/lib/socket';
-import { Activity, Shield, AlertTriangle, Play } from 'lucide-react';
+import { Activity, Shield, AlertTriangle, Target, Bot } from 'lucide-react';
 
 const Simulation = () => {
   const navigate = useNavigate();
@@ -146,11 +146,11 @@ const Simulation = () => {
         className="text-center space-y-4"
       >
         <div className="flex items-center justify-center gap-2">
-          <AlertTriangle className="w-8 h-8 text-cyber-danger animate-pulse-danger" />
+          <AlertTriangle className="w-8 h-8 text-cyber-danger animate-pulse-danger bg-transparent" />
           <h1 className="font-header text-4xl text-cyber-danger font-bold">
             Live Attack Monitoring
           </h1>
-          <AlertTriangle className="w-8 h-8 text-cyber-danger animate-pulse-danger" />
+          <AlertTriangle className="w-8 h-8 text-cyber-danger animate-pulse-danger bg-transparent" />
         </div>
         <p className="text-lg text-muted-foreground">
           Real-time honeypot telemetry. All systems monitored.
@@ -168,7 +168,7 @@ const Simulation = () => {
           <Card className="glass-panel border-cyber-danger/30">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-cyber-danger">
-                <Activity className="w-5 h-5 animate-pulse-danger" />
+                <Activity className="w-5 h-5 animate-pulse-danger bg-transparent" />
                 Threat Level
               </CardTitle>
             </CardHeader>
@@ -191,7 +191,7 @@ const Simulation = () => {
           <Card className="glass-panel border-cyber-primary/30">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-cyber-primary">
-                <Shield className="w-5 h-5 animate-pulse-primary" />
+                <Shield className="w-5 h-5 animate-pulse-primary bg-transparent" />
                 Real Assets
               </CardTitle>
             </CardHeader>
@@ -238,10 +238,10 @@ const Simulation = () => {
           transition={{ delay: 0.4 }}
           className="lg:col-span-2"
         >
-          <Card className="glass-panel h-[600px]">
+          <Card className="glass-panel h-[60vh] min-h-[420px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-danger">
-                <Activity className="w-5 h-5 animate-pulse-danger" />
+                <Activity className="w-5 h-5 animate-pulse-danger bg-transparent" />
                 Live Network Activity
               </CardTitle>
               <CardDescription>
@@ -260,7 +260,7 @@ const Simulation = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="glass-panel h-[600px]">
+          <Card className="glass-panel h-[60vh] min-h-[420px]">
             <CardContent className="p-0 h-full">
               <ThreatIntelPanel />
             </CardContent>
@@ -276,7 +276,7 @@ const Simulation = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Card className="glass-panel h-[400px]">
+          <Card className="glass-panel h-[38vh] min-h-[320px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-accent">
                 <Activity className="w-5 h-5" />
@@ -298,7 +298,7 @@ const Simulation = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <Card className="glass-panel h-[400px]">
+          <Card className="glass-panel h-[38vh] min-h-[320px]">
             <CardContent className="p-0 h-full">
               <SecurityAlertFeed />
             </CardContent>

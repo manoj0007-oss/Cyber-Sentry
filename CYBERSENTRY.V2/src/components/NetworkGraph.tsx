@@ -387,9 +387,9 @@ export const NetworkGraph = ({ className = '' }: NetworkGraphProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.99 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`glass-panel ${className}`}
+      className={`${className}`}
     >
       <div id="network-graph-container" className="h-full w-full relative overflow-hidden">
         <svg

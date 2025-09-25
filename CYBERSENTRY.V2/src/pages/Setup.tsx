@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Users, Target } from 'lucide-react';
+import { Shield, Users, Target, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NetworkGraph } from '@/components/NetworkGraph';
@@ -32,91 +32,19 @@ const Setup = () => {
         </p>
       </motion.div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="glass-panel border-cyber-primary/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-cyber-primary">
-                <Shield className="w-5 h-5" />
-                Real Servers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-cyber-primary">
-                {realServers.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Critical assets protected
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="glass-panel border-cyber-secondary/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-cyber-secondary">
-                <Target className="w-5 h-5" />
-                Active Honeypots
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-cyber-secondary">
-                {decoys.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Honeypot sensors online
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="glass-panel border-cyber-accent/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-cyber-accent">
-                <Users className="w-5 h-5" />
-                Coverage Ratio
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-cyber-accent">
-                {realServers.length > 0 ? Math.round((decoys.length / realServers.length) * 100) : 0}%
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Deception coverage
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Network Visualization */}
+      {/* Main Content Split: 70% / 30% */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left: Network Topology (~70%) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-          className="lg:col-span-2"
+          transition={{ delay: 0.2 }}
+          className="lg:basis-[70%] lg:shrink-0"
         >
-          <Card className="glass-panel h-[500px]">
+          <Card className="glass-panel h-[70vh] md:h-[70vh] min-h-[520px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-accent">
-                <Target className="w-5 h-5" />
+                <Target className="w-5 h-5 icon-clean" />
                 Network Topology
               </CardTitle>
               <CardDescription>
@@ -129,32 +57,73 @@ const Setup = () => {
           </Card>
         </motion.div>
 
-        {/* Live Monitoring Panel */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-4"
-        >
-          <Card className="glass-panel border-cyber-primary/30">
-            <CardHeader>
-              <CardTitle className="text-cyber-primary">Open Live Monitoring</CardTitle>
-              <CardDescription>
-                View real-time attacker activity from honeypot logs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => navigate('/simulation')}
-                variant="cyber"
-                size="xl"
-                className="w-full font-header"
-              >
-                Open Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Right: Stacked 2:1:1:1 */}
+        <div className="lg:basis-[30%] grid grid-rows-[2fr_1fr_1fr_1fr] gap-4 h-[70vh] md:h-[70vh] min-h-[520px]">
+          {/* Open Live Monitoring (2fr) */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
+            <Card className="glass-panel h-full border-cyber-primary/30 flex flex-col">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-cyber-primary">
+                  <Activity className="w-5 h-5 icon-clean" />
+                  Open Live Monitoring
+                </CardTitle>
+                <CardDescription>View real-time attacker activity</CardDescription>
+              </CardHeader>
+              <div className="flex-1" />
+              <CardContent className="pb-5">
+                <Button onClick={() => navigate('/simulation')} variant="cyber" size="lg" className="w-full font-header">Open Dashboard</Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Real Servers (1fr) */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+            <Card className="glass-panel h-full border-cyber-primary/30">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-cyber-primary">
+                  <Shield className="w-5 h-5 icon-clean" />
+                  Real Servers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-cyber-primary">{realServers.length}</div>
+                <p className="text-sm text-muted-foreground">Critical assets protected</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Active Honeypots (1fr) */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
+            <Card className="glass-panel h-full border-cyber-secondary/30">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-cyber-secondary">
+                  <Target className="w-5 h-5 icon-clean" />
+                  Active Honeypots
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-cyber-secondary">{decoys.length}</div>
+                <p className="text-sm text-muted-foreground">Honeypot sensors online</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Coverage Ratio (1fr) */}
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
+            <Card className="glass-panel h-full border-cyber-accent/30">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-cyber-accent">
+                  <Users className="w-5 h-5 icon-clean" />
+                  Coverage Ratio
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-cyber-accent">{realServers.length > 0 ? Math.round((decoys.length / realServers.length) * 100) : 0}%</div>
+                <p className="text-sm text-muted-foreground">Deception coverage</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
 
       <AIChatbot />

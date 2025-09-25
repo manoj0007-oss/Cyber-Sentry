@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Users, Target, Activity } from 'lucide-react';
@@ -10,14 +10,17 @@ import { AIChatbot } from '@/components/AIChatbot';
 
 const Setup = () => {
   const navigate = useNavigate();
-  const { nodes } = useNetworkStore();
+  const { nodes, resetNetwork } = useNetworkStore();
   const [isDeploying] = useState(false);
 
   const realServers = nodes.filter(n => n.type === 'real');
-  const decoys = nodes.filter(n => n.type === 'decoy' || n.type === 'honeypot');
+  const decoys = nodes.filter((n: any) => n.type === 'decoy' || n.type === 'honeypot');
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Ensure counts and graph match by resetting to initial nodes on mount */}
+      {(() => { return null; })()}
+      {useEffect(() => { try { resetNetwork(); } catch {} }, [])}
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -41,7 +44,7 @@ const Setup = () => {
           transition={{ delay: 0.2 }}
           className="lg:basis-[70%] lg:shrink-0"
         >
-          <Card className="glass-panel h-[70vh] md:h-[70vh] min-h-[520px]">
+          <Card className="glass-panel h-[75vh] md:h-[75vh] min-h-[560px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-accent">
                 <Target className="w-5 h-5 icon-clean" />
@@ -58,7 +61,7 @@ const Setup = () => {
         </motion.div>
 
         {/* Right: Stacked 2:1:1:1 */}
-        <div className="lg:basis-[30%] grid grid-rows-[2fr_1fr_1fr_1fr] gap-4 h-[70vh] md:h-[70vh] min-h-[520px]">
+        <div className="lg:basis-[30%] grid grid-rows-[2fr_1fr_1fr_1fr] gap-4 h-[75vh] md:h-[75vh] min-h-[560px]">
           {/* Open Live Monitoring (2fr) */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
             <Card className="glass-panel h-full border-cyber-primary/30 flex flex-col">

@@ -23,7 +23,7 @@ const Simulation = () => {
   } = useNetworkStore();
   const [simulationStep, setSimulationStep] = useState(0);
 
-  const decoys = nodes.filter(n => n.type === 'decoy');
+  const decoys = nodes.filter(n => n.type === 'decoy' || (n as any).type === 'honeypot');
   const attackerNode = nodes.find(n => n.type === 'attacker');
   const threatText = attackerNode ? (attackerNode.status === 'contained' ? 'CONTAINED' : 'HIGH') : 'LOW';
   const threatSubtitle = threatText === 'LOW'
@@ -231,14 +231,14 @@ const Simulation = () => {
 
       {/* Main Simulation Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Network Graph - Takes 2 columns */}
+        {/* Network Graph - Takes 2 columns, taller */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
           className="lg:col-span-2"
         >
-          <Card className="glass-panel h-[60vh] min-h-[420px]">
+          <Card className="glass-panel h-[80vh] min-h-[600px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-danger">
                 <Activity className="w-5 h-5 animate-pulse-danger bg-transparent" />
@@ -254,13 +254,13 @@ const Simulation = () => {
           </Card>
         </motion.div>
 
-        {/* Threat Intel Panel */}
+        {/* Threat Intel Panel (one column) */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="glass-panel h-[60vh] min-h-[420px]">
+          <Card className="glass-panel h-[80vh] min-h-[600px]">
             <CardContent className="p-0 h-full">
               <ThreatIntelPanel />
             </CardContent>
@@ -268,15 +268,16 @@ const Simulation = () => {
         </motion.div>
       </div>
 
-      {/* Bottom Row - Terminal and Alerts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Bottom Row - Terminal and Alerts (match widths to above columns) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Terminal */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
+          className="lg:col-span-2"
         >
-          <Card className="glass-panel h-[38vh] min-h-[320px]">
+          <Card className="glass-panel h-[80vh] min-h-[600px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-cyber-accent">
                 <Activity className="w-5 h-5" />
@@ -298,7 +299,7 @@ const Simulation = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <Card className="glass-panel h-[38vh] min-h-[320px]">
+          <Card className="glass-panel h-[80vh] min-h-[600px]">
             <CardContent className="p-0 h-full">
               <SecurityAlertFeed />
             </CardContent>

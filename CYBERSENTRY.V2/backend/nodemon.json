@@ -1,0 +1,11 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": [
+    "database.json",
+    "node_modules/**"
+  ],
+  "exec": "node src/index.js"
+}
+
+

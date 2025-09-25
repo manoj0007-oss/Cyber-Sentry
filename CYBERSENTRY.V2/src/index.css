@@ -1,0 +1,416 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base System Colors */
+    --background: 221 39% 11%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --primary: 210 40% 8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 222.2 84% 4.9%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 263 70% 50%;
+    --radius: 0.5rem;
+
+    /* Cyberpunk Color Palette */
+    --cyber-primary: 160 100% 50%;     /* Bright cyan #00ff80 */
+    --cyber-secondary: 28 100% 65%;    /* Bright orange #ffa500 */  
+    --cyber-accent: 240 100% 70%;      /* Electric blue #3366ff */
+    --cyber-danger: 0 100% 60%;        /* Red alert #ff3333 */
+    --cyber-success: 120 100% 50%;     /* Green success #00ff00 */
+    --cyber-warning: 45 100% 60%;      /* Yellow warning #ffcc00 */
+
+    /* Glass Effects */
+    --glass-bg: 221 39% 11% / 0.1;
+    --glass-border: 213 31% 91% / 0.1;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--cyber-primary)), hsl(160 100% 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--cyber-secondary)), hsl(28 100% 70%));
+    --gradient-danger: linear-gradient(135deg, hsl(var(--cyber-danger)), hsl(0 100% 70%));
+    --gradient-cyber: linear-gradient(135deg, hsl(var(--cyber-primary)), hsl(var(--cyber-accent)));
+
+    /* Typography */
+    --font-header: 'Orbitron', monospace;
+    --font-body: 'Exo 2', sans-serif;
+
+    /* Shadows & Glows */
+    --shadow-glow: 0 0 20px hsl(var(--cyber-primary) / 0.3);
+    --shadow-danger: 0 0 20px hsl(var(--cyber-danger) / 0.3);
+    --shadow-secondary: 0 0 20px hsl(var(--cyber-secondary) / 0.3);
+  }
+
+  .dark {
+    --background: 221 39% 11%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --primary: 210 40% 8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 222.2 84% 4.9%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 263 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+    background: radial-gradient(ellipse at center, hsl(var(--background)) 0%, hsl(221 39% 8%) 100%);
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-header);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--cyber-accent) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--cyber-accent) / 0.5);
+}
+
+@layer components {
+  /* Glass Panel Effect */
+  #network-graph-container {
+    position: relative;
+  }
+
+  .containment-field {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid #ff3e3e;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse-contain 2s infinite ease-in-out;
+    pointer-events: none;
+  }
+
+  @keyframes pulse-contain {
+    0% { box-shadow: 0 0 0 0 rgba(255, 62, 62, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 62, 62, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 62, 62, 0); }
+  }
+  .glass-panel {
+    @apply bg-card/20 backdrop-blur-md border border-glass-border rounded-lg;
+    background: linear-gradient(135deg, 
+      hsl(var(--glass-bg)), 
+      hsl(var(--glass-bg) / 0.05)
+    );
+    box-shadow: 
+      0 8px 32px hsl(var(--background) / 0.3),
+      inset 0 1px 0 hsl(var(--glass-border)),
+      0 0 20px hsl(var(--cyber-accent) / 0.1);
+  }
+
+  /* removed neon rotating border */
+
+  /* Terminal Styling */
+  .terminal-screen, .terminal {
+    @apply bg-background/90 text-cyber-primary font-mono text-sm;
+    background: 
+      linear-gradient(135deg, 
+        hsl(var(--background) / 0.95), 
+        hsl(221 39% 8% / 0.95)
+      );
+    border: 1px solid hsl(var(--cyber-primary) / 0.3);
+    box-shadow: 
+      0 0 30px hsl(var(--cyber-primary) / 0.2),
+      inset 0 0 20px hsl(var(--background) / 0.5);
+  }
+
+  /* Glow Effects */
+  .glow-primary {
+    box-shadow: 0 0 30px hsl(var(--cyber-primary) / 0.4);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 30px hsl(var(--cyber-secondary) / 0.4);
+  }
+
+  .glow-danger {
+    box-shadow: 0 0 30px hsl(var(--cyber-danger) / 0.4);
+  }
+
+  /* Button Enhancements */
+  .btn-cyber {
+    @apply relative overflow-hidden backdrop-blur-sm transition-all duration-300;
+    @apply border border-transparent font-semibold tracking-wide;
+    font-family: var(--font-header);
+  }
+  
+  /* Network node styles */
+  .network-node {
+    @apply rounded-full transition-all duration-300;
+  }
+  
+  .network-node-real {
+    @apply glow-primary;
+    background: var(--gradient-primary);
+  }
+  
+  .network-node-decoy {
+    @apply glow-secondary;
+    background: linear-gradient(135deg, hsl(var(--cyber-secondary)), hsl(28 100% 70%));
+  }
+  
+  .network-node-attacker {
+    @apply glow-danger;
+    background: var(--gradient-danger);
+  }
+
+  /* DRAMATIC CYBER ANIMATIONS - Synchronized with attack narrative */
+  @keyframes glitch {
+    0%, 100% { 
+      text-shadow: 0 0 5px hsl(var(--cyber-danger)), 0 0 10px hsl(var(--cyber-danger));
+      transform: translate(0);
+    }
+    20% { 
+      text-shadow: 2px 0 hsl(var(--cyber-danger)), -2px 0 hsl(var(--cyber-accent));
+      transform: translate(-2px, 0);
+    }
+    40% { 
+      text-shadow: -2px 0 hsl(var(--cyber-danger)), 2px 0 hsl(var(--cyber-accent));
+      transform: translate(2px, 0);
+    }
+    60% { 
+      text-shadow: 0 0 15px hsl(var(--cyber-danger));
+      transform: translate(1px, -1px);
+    }
+    80% { 
+      text-shadow: 3px 0 hsl(var(--cyber-accent)), -3px 0 hsl(var(--cyber-danger));
+      transform: translate(-1px, 1px);
+    }
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  @keyframes laser-pulse {
+    0% { 
+      opacity: 0.2;
+      stroke-dasharray: 0, 20;
+      filter: drop-shadow(0 0 3px currentColor);
+    }
+    25% { 
+      opacity: 0.8;
+      stroke-dasharray: 5, 15;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+    50% { 
+      opacity: 1;
+      stroke-dasharray: 10, 10;
+      filter: drop-shadow(0 0 12px currentColor);
+    }
+    75% { 
+      opacity: 0.8;
+      stroke-dasharray: 15, 5;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+    100% { 
+      opacity: 0.2;
+      stroke-dasharray: 20, 0;
+      filter: drop-shadow(0 0 3px currentColor);
+    }
+  }
+
+  @keyframes pulse-danger {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 20px hsl(var(--cyber-danger) / 0.5);
+    }
+    50% { 
+      opacity: 0.6;
+      transform: scale(1.05);
+      box-shadow: 0 0 30px hsl(var(--cyber-danger) / 0.8);
+    }
+  }
+
+  @keyframes pulse-secondary {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 15px hsl(var(--cyber-secondary) / 0.4);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: scale(1.03);
+      box-shadow: 0 0 25px hsl(var(--cyber-secondary) / 0.7);
+    }
+  }
+
+  @keyframes pulse-primary {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 15px hsl(var(--cyber-primary) / 0.4);
+    }
+    50% { 
+      opacity: 0.8;
+      transform: scale(1.02);
+      box-shadow: 0 0 20px hsl(var(--cyber-primary) / 0.6);
+    }
+  }
+
+  /* NEW DRAMATIC EFFECTS FOR PERFECT SYNCHRONIZATION */
+  @keyframes scan-pulse {
+    0% { 
+      opacity: 0.3;
+      transform: scale(1);
+      box-shadow: 0 0 10px hsl(var(--cyber-accent));
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.2);
+      box-shadow: 0 0 40px hsl(var(--cyber-accent)), 0 0 60px hsl(var(--cyber-accent) / 0.5);
+    }
+    100% { 
+      opacity: 0.3;
+      transform: scale(1);
+      box-shadow: 0 0 10px hsl(var(--cyber-accent));
+    }
+  }
+
+  @keyframes breach-explosion {
+    0% { 
+      transform: scale(1);
+      opacity: 1;
+    }
+    20% { 
+      transform: scale(1.5);
+      opacity: 0.8;
+      box-shadow: 0 0 50px hsl(var(--cyber-danger));
+    }
+    40% { 
+      transform: scale(0.8);
+      opacity: 0.9;
+    }
+    60% { 
+      transform: scale(1.2);
+      opacity: 0.7;
+    }
+    100% { 
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 0 20px hsl(var(--cyber-danger));
+    }
+  }
+
+  @keyframes data-leak {
+    0%, 100% { 
+      opacity: 1;
+      box-shadow: 0 0 15px hsl(var(--cyber-danger));
+    }
+    25% { 
+      opacity: 0.7;
+      box-shadow: 0 0 30px hsl(var(--cyber-danger)), 0 0 50px hsl(var(--cyber-danger) / 0.3);
+    }
+    50% { 
+      opacity: 0.9;
+      box-shadow: 0 0 40px hsl(var(--cyber-danger)), 0 0 60px hsl(var(--cyber-danger) / 0.5);
+    }
+    75% { 
+      opacity: 0.6;
+      box-shadow: 0 0 25px hsl(var(--cyber-danger));
+    }
+  }
+
+  .animate-glitch {
+    animation: glitch 2s infinite;
+  }
+
+  .animate-blink {
+    animation: blink 1s infinite;
+  }
+
+  .animate-laser-pulse {
+    animation: laser-pulse 1.5s infinite;
+  }
+
+  .animate-pulse-danger {
+    animation: pulse-danger 2s infinite;
+  }
+
+  .animate-pulse-secondary {
+    animation: pulse-secondary 2s infinite;
+  }
+
+  .animate-pulse-primary {
+    animation: pulse-primary 2s infinite;
+  }
+
+  /* NEW DRAMATIC ANIMATION CLASSES */
+  .animate-scan-pulse {
+    animation: scan-pulse 1s infinite;
+  }
+
+  .animate-breach-explosion {
+    animation: breach-explosion 0.8s ease-out;
+  }
+
+  .animate-data-leak {
+    animation: data-leak 1.5s infinite;
+  }
+
+  /* Enhanced existing animations with more drama */
+  .animate-ping {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .animate-bounce {
+    animation: bounce 1s infinite;
+  }
+
+  .animate-spin {
+    animation: spin 2s linear infinite;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "decoys": [
+    {
+      "id": "decoy-1758205151076",
+      "name": "HR-FILES-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "hr-files",
+      "x": 158.97785369356706,
+      "y": -110.55447901888404
+    },
+    {
+      "id": "decoy-1758205154642",
+      "name": "FILE-SERVER-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "file-server",
+      "x": -170.55453329354552,
+      "y": 55.79658228620919
+    },
+    {
+      "id": "decoy-1758214127448",
+      "name": "BACKUP-SYS-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "backup-sys",
+      "x": 49.79296333854743,
+      "y": 60.77456756679487
+    },
+    {
+      "id": "decoy-1758214134793",
+      "name": "BACKUP-SYS-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "backup-sys",
+      "x": 26.20229453336478,
+      "y": 6.21325132560451
+    },
+    {
+      "id": "decoy-1758214138935",
+      "name": "PROD-DB-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "prod-db",
+      "x": -262.5625063630207,
+      "y": -40.104987626542076
+    },
+    {
+      "id": "decoy-1758214323665",
+      "name": "HR-FILES-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "hr-files",
+      "x": 153.03245685304614,
+      "y": -36.7372273805357
+    },
+    {
+      "id": "decoy-1758214330316",
+      "name": "BACKUP-SYS-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "backup-sys",
+      "x": 146.00686734040127,
+      "y": 47.42443679182577
+    },
+    {
+      "id": "decoy-1758215625952",
+      "name": "FILE-SERVER-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "file-server",
+      "x": -37.43525305791305,
+      "y": 12.824087018323787
+    },
+    {
+      "id": "decoy-1758215630001",
+      "name": "BACKUP-SYS-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "backup-sys",
+      "x": 74.06108695893667,
+      "y": 121.55335117645267
+    },
+    {
+      "id": "decoy-1758215789838",
+      "name": "HR-FILES-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "hr-files",
+      "x": 249.231326060461,
+      "y": -138.21592767902519
+    },
+    {
+      "id": "decoy-1758215799345",
+      "name": "HR-FILES-DECOY",
+      "type": "decoy",
+      "status": "normal",
+      "target": "hr-files",
+      "x": 151.62463785285712,
+      "y": -73.89942510226993
+    }
+  ],
+  "isSimulating": true
+}

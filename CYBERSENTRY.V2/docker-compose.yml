@@ -1,0 +1,56 @@
+version: '3'
+services:
+  cowrie1:
+    image: cowrie/cowrie
+    container_name: cowrie1
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./cowrie/log1:/cowrie/log
+
+  cowrie2:
+    image: cowrie/cowrie
+    container_name: cowrie2
+    ports:
+      - "2223:2222"
+    volumes:
+      - ./cowrie/log2:/cowrie/log
+
+  cowrie3:
+    image: cowrie/cowrie
+    container_name: cowrie3
+    ports:
+      - "2224:2222"
+    volumes:
+      - ./cowrie/log3:/cowrie/log
+
+  backend:
+    build:
+      context: ./CYBERSENTRY.V2/backend
+    container_name: cybersentry-backend
+    environment:
+      - NODE_ENV=production
+      - CORS_ORIGIN=*
+      - PORT=3001
+      # Optional runtime config (uncomment and set as needed)
+      # - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      # - SSH_AUTO_CONNECT=false
+      # - DECOY_HOST=host.docker.internal
+      # - DECOY_PORT=2222
+      # - DECOY_USERNAME=admin
+      # - DECOY_PASSWORD=password123
+      # - ENABLE_ACTIVE_BLOCK=false
+      # - COWRIE_LOG_PATHS=/cowrie-logs/log1/cowrie.json,/cowrie-logs/log2/cowrie.json,/cowrie-logs/log3/cowrie.json
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./CYBERSENTRY.V2/backend/database.json:/app/database.json
+      - ./cowrie/log1:/cowrie-logs/log1:ro
+      - ./cowrie/log2:/cowrie-logs/log2:ro
+      - ./cowrie/log3:/cowrie-logs/log3:ro
+    depends_on:
+      - cowrie1
+      - cowrie2
+      - cowrie3
+

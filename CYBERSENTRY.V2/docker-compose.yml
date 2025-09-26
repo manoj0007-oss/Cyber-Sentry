@@ -7,6 +7,7 @@ services:
     volumes:
       - ./cowrie/log1:/cowrie/cowrie-git/var/log/cowrie
       - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./cowrie/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
 
   cowrie2:
   #":2233:2222"
@@ -17,6 +18,7 @@ services:
     volumes:
       - ./cowrie/log2:/cowrie/cowrie-git/var/log/cowrie
       - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./cowrie/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
 
   cowrie3:
     image: cowrie/cowrie
@@ -26,6 +28,7 @@ services:
     volumes:
       - ./cowrie/log3:/cowrie/cowrie-git/var/log/cowrie
       - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
+      - ./cowrie/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
 
   backend:
     build:
@@ -36,6 +39,8 @@ services:
       - NODE_ENV=production
       - CORS_ORIGIN=*
       - PORT=3001
+      - ENABLE_CONTAINMENT=true
+      - ENABLE_HEURISTICS=true
       - COWRIE_LOG_PATHS=/cowrie-logs/log1/cowrie.json,/cowrie-logs/log2/cowrie.json,/cowrie-logs/log3/cowrie.json
       # Optional runtime config (uncomment and set as needed)
       # - GEMINI_API_KEY=${GEMINI_API_KEY}

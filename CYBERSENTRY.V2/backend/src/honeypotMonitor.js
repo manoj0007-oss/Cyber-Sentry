@@ -28,7 +28,11 @@ class HoneypotMonitor {
 	}
 
 	start() {
-		const watcher = chokidar.watch(this.logPath, { ignoreInitial: false });
+		const watcher = chokidar.watch(this.logPath, {
+			ignoreInitial: true,
+			awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 50 },
+			persistent: true,
+		});
 		watcher.on('change', (path) => this.handleLogChange(path));
 		try {
 			const stats = fs.statSync(this.logPath);
@@ -65,15 +69,29 @@ class HoneypotMonitor {
 	}
 
 	analyzeEvent(event) {
-		switch (event.eventid) {
+			switch (event.eventid) {
 			case 'cowrie.session.connect':
+					console.log(`[HP:${this.honeypotId}] connect from`, event.src_ip);
 				this.io.emit('attack:start', {
 					src_ip: event.src_ip,
 					timestamp: event.timestamp,
 					honeypotId: this.honeypotId
 				});
+					this.io.emit('alert:new', { text: `Connection from ${event.src_ip} → ${this.honeypotId}`, level: 'info' });
 				break;
+				case 'cowrie.login.failed':
+					console.log(`[HP:${this.honeypotId}] login failed`, event.src_ip, event.username);
+					// Reflect failed logins as alerts and graph pulses
+					this.io.emit('alert:new', {
+						text: `Failed SSH login from ${event.src_ip} as ${event.username || 'unknown'}`,
+						level: 'warning'
+					});
+					this.io.emit('graph:command', { action: 'pulse-node', id: this.honeypotId });
+					// Also mark attacker node so UI shows presence even without success
+					this.io.emit('graph:command', { action: 'add-node', id: 'attacker', name: event.src_ip, type: 'attacker' });
+					break;
 			case 'cowrie.login.success':
+					console.log(`[HP:${this.honeypotId}] login success`, event.src_ip, event.username);
 				this.io.emit('attack:login', {
 					src_ip: event.src_ip,
 					username: event.username,

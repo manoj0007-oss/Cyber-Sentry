@@ -11,6 +11,7 @@ import { AIChatbot } from '@/components/AIChatbot';
 const Setup = () => {
   const navigate = useNavigate();
   const { nodes, resetNetwork } = useNetworkStore();
+  useEffect(() => { try { resetNetwork(); } catch {} }, []);
   const [isDeploying] = useState(false);
 
   const realServers = nodes.filter(n => n.type === 'real');
@@ -18,9 +19,7 @@ const Setup = () => {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* Ensure counts and graph match by resetting to initial nodes on mount */}
-      {(() => { return null; })()}
-      {useEffect(() => { try { resetNetwork(); } catch {} }, [])}
+      {/* Page content */}
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

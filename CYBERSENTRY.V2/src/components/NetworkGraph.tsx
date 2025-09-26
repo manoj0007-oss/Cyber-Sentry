@@ -45,6 +45,12 @@ export const NetworkGraph = ({ className = '' }: NetworkGraphProps) => {
 
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
+    // Attach non-passive wheel listener so we can call preventDefault
+    const el = svgRef.current;
+    const wheelHandler = (evt: WheelEvent) => handleWheel(evt as any);
+    if (el) {
+      el.addEventListener('wheel', wheelHandler, { passive: false });
+    }
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
@@ -396,7 +402,6 @@ export const NetworkGraph = ({ className = '' }: NetworkGraphProps) => {
           ref={svgRef}
           className="w-full h-full"
           viewBox={`${-dimensions.width/2} ${-dimensions.height/2} ${dimensions.width} ${dimensions.height}`}
-          onWheel={handleWheel}
           onMouseDown={handlePanStart}
           onMouseMove={onSvgMouseMove}
           onMouseUp={onSvgMouseUp}

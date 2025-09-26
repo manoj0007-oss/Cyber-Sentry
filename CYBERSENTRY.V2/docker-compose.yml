@@ -1,37 +1,42 @@
-version: '3'
 services:
   cowrie1:
     image: cowrie/cowrie
     container_name: cowrie1
     ports:
-      - "2222:2222"
+      - "26022:2222"
     volumes:
-      - ./cowrie/log1:/cowrie/log
+      - ./cowrie/log1:/cowrie/cowrie-git/var/log/cowrie
+      - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
 
   cowrie2:
+  #":2233:2222"
     image: cowrie/cowrie
     container_name: cowrie2
     ports:
-      - "2223:2222"
+      - "26023:2222"
     volumes:
-      - ./cowrie/log2:/cowrie/log
+      - ./cowrie/log2:/cowrie/cowrie-git/var/log/cowrie
+      - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
 
   cowrie3:
     image: cowrie/cowrie
     container_name: cowrie3
     ports:
-      - "2224:2222"
+      - "26024:2222"
     volumes:
-      - ./cowrie/log3:/cowrie/log
+      - ./cowrie/log3:/cowrie/cowrie-git/var/log/cowrie
+      - ./cowrie/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt:ro
 
   backend:
     build:
-      context: ./CYBERSENTRY.V2/backend
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: cybersentry-backend
     environment:
       - NODE_ENV=production
       - CORS_ORIGIN=*
       - PORT=3001
+      - COWRIE_LOG_PATHS=/cowrie-logs/log1/cowrie.json,/cowrie-logs/log2/cowrie.json,/cowrie-logs/log3/cowrie.json
       # Optional runtime config (uncomment and set as needed)
       # - GEMINI_API_KEY=${GEMINI_API_KEY}
       # - GOOGLE_API_KEY=${GOOGLE_API_KEY}
@@ -45,7 +50,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./CYBERSENTRY.V2/backend/database.json:/app/database.json
+      - ./backend/database.json:/app/database.json
       - ./cowrie/log1:/cowrie-logs/log1:ro
       - ./cowrie/log2:/cowrie-logs/log2:ro
       - ./cowrie/log3:/cowrie-logs/log3:ro
@@ -53,4 +58,16 @@ services:
       - cowrie1
       - cowrie2
       - cowrie3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./CYBERSENTRY.V2/frontend.Dockerfile
+    container_name: cybersentry-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./CYBERSENTRY.V2/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
 

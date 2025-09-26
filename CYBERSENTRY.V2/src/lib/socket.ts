@@ -3,25 +3,30 @@ import { io, Socket } from 'socket.io-client';
 class SocketManager {
   private socket: Socket | null = null;
 
-  private makeUrl(port: number): string {
+  private makeUrl(): string {
     const envUrl = (import.meta as any)?.env?.VITE_BACKEND_URL as string | undefined;
     if (envUrl) return envUrl;
-    const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-    return `${proto}://localhost:${port}`;
+    // Connect directly to backend service on 3001 to avoid proxy issues
+    const isHttps = false; // backend is http/ws on 3001
+    const wsProto = isHttps ? 'wss' : 'ws';
+    const host = location.hostname;
+    return `${wsProto}://${host}:3001`;
   }
 
-  private restBase(port: number): string {
+  private restBase(): string {
     const envUrl = (import.meta as any)?.env?.VITE_BACKEND_URL as string | undefined;
     if (envUrl) return envUrl.replace(/^ws/, 'http').replace(/^wss/, 'https');
-    const proto = location.protocol === 'https:' ? 'https' : 'http';
-    return `${proto}://localhost:${port}`;
+    // Direct to backend API on 3001
+    return `http://${location.hostname}:3001`;
   }
 
   connect() {
     if (!this.socket) {
-      // Try 3001 first, then 3002 if it fails
-      const tryConnect = (port: number) => io(this.makeUrl(port), { autoConnect: true });
-      let socket = tryConnect(3001);
+      // Connect directly to backend first
+      const options = { autoConnect: true, path: '/socket.io', transports: ['websocket','polling'], withCredentials: false } as const;
+      const tryDirectBackend = () => io(this.makeUrl(), options);
+      const trySameOrigin = () => io(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`, options);
+      let socket = tryDirectBackend();
 
       socket.on('connect', () => {
         console.log('🔌 Connected to CyberSentry Command Center');
@@ -117,10 +122,9 @@ class SocketManager {
       const fallbackTimer = setTimeout(() => {
         if (!socket.connected) {
           try { socket.close(); } catch {}
-          socket = tryConnect(3002);
-          // reattach handlers already bound above (they remain bound on 'socket' variable)
+          socket = trySameOrigin();
         }
-      }, 1200);
+      }, 1500);
 
       socket.on('connect', () => clearTimeout(fallbackTimer));
 
@@ -142,11 +146,8 @@ class SocketManager {
 
   async startSimulation(): Promise<void> {
     try {
-      // Try REST on 3001, then 3002
-      let res = await fetch(this.restBase(3001) + '/api/simulation/start', { method: 'POST' });
-      if (!res.ok) {
-        res = await fetch(this.restBase(3002) + '/api/simulation/start', { method: 'POST' });
-      }
+      // Use same-origin REST via Nginx proxy
+      let res = await fetch(this.restBase() + '/api/simulation/start', { method: 'POST' });
       if (!res.ok) throw new Error('backend responded non-OK');
     } catch (err) {
       // Fallback: rich local synchronized script so UI is not blank

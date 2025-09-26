@@ -39,7 +39,17 @@ const app = express();
 // CORS
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: CORS_ORIGIN, methods: ['GET', 'POST'] } });
+const io = new Server(server, {
+  path: '/socket.io',
+  transports: ['websocket', 'polling'],
+  pingInterval: 25000,
+  pingTimeout: 60000,
+  allowEIO3: true,
+  cors: {
+    origin: CORS_ORIGIN || '*',
+    methods: ['GET', 'POST'],
+  },
+});
 
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
@@ -259,8 +269,10 @@ CONTEXT (JSON):\n${JSON.stringify(context)}\n\nUSER:\n${message.trim()}\n\nGUIDA
 // Socket.IO connection handling
 io.on('connection', async (socket) => {
   try {
-    await db.read();
-    socket.emit('network:update', db.data);
+    await dbRead();
+    socket.emit('network:update', db);
+    // Emit a test alert on connect to verify frontend wiring
+    socket.emit('alert:new', { text: 'Connected to CyberSentry backend', level: 'info' });
     console.log('🔌 Client connected:', socket.id);
     
     socket.on('disconnect', () => {

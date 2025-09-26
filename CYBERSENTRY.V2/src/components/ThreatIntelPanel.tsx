@@ -1,32 +1,27 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNetworkStore } from '@/store/networkStore';
 import { Globe, Users, Target, TrendingUp } from 'lucide-react';
 
 export const ThreatIntelPanel = () => {
   const store = useNetworkStore();
-  const [intel, setIntel] = useState<{ [k: string]: any }>({});
+  const intel = useNetworkStore(s => s.threatIntel);
 
-  // Start empty; incrementally populate via socket events
+  // Subscribe handlers to update global store (panel renders from store)
   useEffect(() => {
     (window as any).handleThreatIntelUpdate = (data: any) => {
-      setIntel(prev => ({ ...prev, [data.property]: data.value, ...(data.confidence !== undefined ? { confidence: data.confidence } : {}) }));
-      // Also reflect into the global store for other consumers
       store.updateThreatIntel({ [data.property]: data.value, ...(data.confidence !== undefined ? { confidence: data.confidence } : {}) } as any);
     };
     (window as any).handleAttackStart = (data: any) => {
-      // Set source IP immediately for actor identification
-      setIntel(prev => ({ ...prev, sourceIp: data.src_ip }));
       store.updateThreatIntel({ sourceIp: data.src_ip } as any);
     };
-    // Flush any buffered intel events that arrived before handler bound
     const w = window as any;
     if (w.__threatIntelBuffer && Array.isArray(w.__threatIntelBuffer)) {
       w.__threatIntelBuffer.forEach((evt: any) => (window as any).handleThreatIntelUpdate(evt));
       w.__threatIntelBuffer = [];
     }
     return () => { delete (window as any).handleThreatIntelUpdate; };
-  }, []);
+  }, [store]);
 
   const confidenceColor = (confidence: number = 0) => {
     if (confidence >= 80) return 'text-cyber-danger';

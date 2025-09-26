@@ -19,6 +19,23 @@ function blockIpWindows(ip) {
   });
 }
 
+// Simple per-source IP scoring state (in-memory)
+const ipState = new Map(); // ip -> { confidence: number, lastAt: number, lastFailAt?: number }
+
+function decayAndBump(ip, baseDelta, cap) {
+  const now = Date.now();
+  const st = ipState.get(ip) || { confidence: 0, lastAt: now };
+  // Decay 10 points per 10 minutes of inactivity
+  const elapsed = now - (st.lastAt || now);
+  const decaySteps = Math.floor(elapsed / (10 * 60 * 1000));
+  if (decaySteps > 0) st.confidence = Math.max(0, st.confidence - decaySteps * 10);
+  // Apply bump and cap
+  st.confidence = Math.min(cap, st.confidence + baseDelta);
+  st.lastAt = now;
+  ipState.set(ip, st);
+  return st.confidence;
+}
+
 class HoneypotMonitor {
 	constructor(logPath, io, honeypotId = 'honeypot-1') {
 		this.logPath = logPath;
@@ -78,6 +95,15 @@ class HoneypotMonitor {
 					honeypotId: this.honeypotId
 				});
 					this.io.emit('alert:new', { text: `Connection from ${event.src_ip} → ${this.honeypotId}`, level: 'info' });
+					// Draw an attack line from attacker to the specific honeypot being accessed
+					this.io.emit('graph:command', { action: 'draw-line', from: 'attacker', to: this.honeypotId, color: 'hsl(var(--cyber-danger))' });
+					// Live terminal notification (use fields expected by frontend)
+					this.io.emit('terminal:live', { output: `ssh connection from ${event.src_ip} → ${this.honeypotId}` });
+					// Threat intel: record source IP immediately
+					this.io.emit('threat-intel:update', { property: 'sourceIp', value: event.src_ip });
+                    // Heuristic: initial confidence floor 20 on first contact
+                    const c1 = decayAndBump(event.src_ip, 20, 95);
+                    this.io.emit('threat-intel:update', { property: 'confidence', value: c1 });
 				break;
 				case 'cowrie.login.failed':
 					console.log(`[HP:${this.honeypotId}] login failed`, event.src_ip, event.username);
@@ -89,6 +115,25 @@ class HoneypotMonitor {
 					this.io.emit('graph:command', { action: 'pulse-node', id: this.honeypotId });
 					// Mark a single shared attacker node; update its name to latest src_ip
 					this.io.emit('graph:command', { action: 'add-node', id: 'attacker', name: event.src_ip, type: 'attacker' });
+					// Keep visual line while the attacker is attempting; then sever shortly after
+					this.io.emit('graph:command', { action: 'draw-line', from: 'attacker', to: this.honeypotId, color: '#ff3e3e' });
+					setTimeout(() => this.io.emit('graph:command', { action: 'connection-severed', from: 'attacker', to: this.honeypotId }), 2000);
+					// Live terminal permission denied line
+					this.io.emit('terminal:live', { output: `Permission denied for ${event.username || 'unknown'} from ${event.src_ip}` });
+					// If cowrie provided the attempted password, display it
+					if (event.password) {
+						this.io.emit('terminal:live', { output: `Attempted credential → ${event.username || 'unknown'} / '${event.password}'` });
+					}
+					// Threat intel: mark tactic and raise confidence slightly on repeated failures
+					this.io.emit('threat-intel:update', { property: 'tactic', value: 'T1110 - SSH Brute Force' });
+                    // Heuristic: +10 per failure (cap 70); if rapid (≤5s since last), add +15 extra
+                    const now = Date.now();
+                    const st = ipState.get(event.src_ip) || { lastFailAt: 0 };
+                    const rapid = now - (st.lastFailAt || 0) <= 5000;
+                    let bump = 10 + (rapid ? 15 : 0);
+                    const c2 = decayAndBump(event.src_ip, bump, 70);
+                    st.lastFailAt = now; ipState.set(event.src_ip, { ...(ipState.get(event.src_ip)||{}), ...st, lastAt: now, confidence: c2 });
+                    this.io.emit('threat-intel:update', { property: 'confidence', value: c2 });
 					break;
 			case 'cowrie.login.success':
 					console.log(`[HP:${this.honeypotId}] login success`, event.src_ip, event.username);
@@ -105,6 +150,9 @@ class HoneypotMonitor {
 				});
 				// Inform threat intel panel
 				this.io.emit('threat-intel:update', { status: 'Contained', sourceIp: event.src_ip });
+                    // Heuristic: jump confidence to 95 on success
+                    const c3 = decayAndBump(event.src_ip, 95, 95);
+                    this.io.emit('threat-intel:update', { property: 'confidence', value: c3 });
 				// Mark attacker contained and sever connection to the honeypot
 				this.io.emit('graph:command', { action: 'contain-attacker', nodeId: 'attacker' });
 				this.io.emit('graph:command', { action: 'connection-severed', from: 'attacker', to: this.honeypotId });
@@ -123,8 +171,21 @@ class HoneypotMonitor {
 					timestamp: event.timestamp,
 					honeypotId: this.honeypotId
 				});
+				// Stream the attacker's typed command to the live terminal
+				this.io.emit('terminal:live', { input: event.input });
 				// Reinforce that the attacker is contained
 				this.io.emit('alert:new', { text: `Blocked command from ${event.src_ip}: ${event.input}`, level: 'warning' });
+				// Threat intel: technique inference for reconnaissance
+				if (typeof event.input === 'string') {
+					const cmd = event.input.toLowerCase();
+					if (/(nmap|masscan)/.test(cmd)) this.io.emit('threat-intel:update', { property: 'technique', value: 'Discovery/Network Scanning' });
+					else if (/(wget|curl|ftp|http)/.test(cmd)) this.io.emit('threat-intel:update', { property: 'technique', value: 'Command and Control' });
+                    // Heuristic: +10 on suspicious commands (cap 90)
+                    if (/(nmap|masscan|wget|curl|ftp|http)/.test(cmd)) {
+                      const c4 = decayAndBump(event.src_ip, 10, 90);
+                      this.io.emit('threat-intel:update', { property: 'confidence', value: c4 });
+                    }
+				}
 				break;
 		}
 	}

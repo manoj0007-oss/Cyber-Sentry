@@ -107,9 +107,16 @@ export const useNetworkStore = create<NetworkState>((set, get) => ({
   simulationStep: 0,
 
   addNode: (node) =>
-    set((state) => ({
-      nodes: [...state.nodes, node],
-    })),
+    set((state) => {
+      const existingIndex = state.nodes.findIndex((n) => n.id === node.id);
+      if (existingIndex >= 0) {
+        // Merge updates (e.g., rename attacker with src_ip) without creating duplicates
+        const updated = [...state.nodes];
+        updated[existingIndex] = { ...updated[existingIndex], ...node } as any;
+        return { nodes: updated } as any;
+      }
+      return { nodes: [...state.nodes, node] } as any;
+    }),
 
   updateNode: (id, updates) =>
     set((state) => ({

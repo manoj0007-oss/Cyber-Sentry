@@ -87,7 +87,7 @@ class HoneypotMonitor {
 						level: 'warning'
 					});
 					this.io.emit('graph:command', { action: 'pulse-node', id: this.honeypotId });
-					// Also mark attacker node so UI shows presence even without success
+					// Mark a single shared attacker node; update its name to latest src_ip
 					this.io.emit('graph:command', { action: 'add-node', id: 'attacker', name: event.src_ip, type: 'attacker' });
 					break;
 			case 'cowrie.login.success':

@@ -74,26 +74,20 @@ export const AIChatbot = () => {
   const simulateAIResponse = async (userMessage: string) => {
     setIsTyping(true);
     try {
-      const res = await fetch('/api/chat', {
+      // Use direct backend URL instead of relative path
+      const backendUrl = `http://${window.location.hostname}:3001/api/chat`;
+      const res = await fetch(backendUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage })
       });
       if (!res.ok) {
-        // try 3002 fallback
-        const res2 = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: userMessage })
-        });
-        if (!res2.ok) throw new Error('chat failed');
-        const data2 = await res2.json();
-        setMessages(prev => [...prev, { id: Date.now().toString(), type: 'ai', text: data2.text, timestamp: new Date() }]);
-      } else {
-        const data = await res.json();
-        setMessages(prev => [...prev, { id: Date.now().toString(), type: 'ai', text: data.text, timestamp: new Date() }]);
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
+      const data = await res.json();
+      setMessages(prev => [...prev, { id: Date.now().toString(), type: 'ai', text: data.text, timestamp: new Date() }]);
     } catch (e) {
+      console.error('Chat API error:', e);
       setMessages(prev => [...prev, { id: Date.now().toString(), type: 'ai', text: 'AI is temporarily unavailable. Please try again shortly.', timestamp: new Date() }]);
     } finally {
       setIsTyping(false);

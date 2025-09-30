@@ -43,8 +43,7 @@ services:
       - ENABLE_HEURISTICS=true
       - COWRIE_LOG_PATHS=/cowrie-logs/log1/cowrie.json,/cowrie-logs/log2/cowrie.json,/cowrie-logs/log3/cowrie.json
       # Optional runtime config (uncomment and set as needed)
-      # - GEMINI_API_KEY=${GEMINI_API_KEY}
-      # - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_API_KEY=AIzaSyDuaCpMNxl3HbFp5_P1D-Ww2DtsQXRvMbc
       # - SSH_AUTO_CONNECT=false
       # - DECOY_HOST=host.docker.internal
       # - DECOY_PORT=2222
@@ -59,6 +58,11 @@ services:
       - ./cowrie/log1:/cowrie-logs/log1:ro
       - ./cowrie/log2:/cowrie-logs/log2:ro
       - ./cowrie/log3:/cowrie-logs/log3:ro
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - cowrie1
       - cowrie2
